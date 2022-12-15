@@ -117,6 +117,7 @@ async function onLoadMore(e) {
       "We're sorry, but you've reached the end of search results."
     );
   }
+  scrollImg();
 }
 
 function onClearGalery() {
@@ -129,3 +130,13 @@ const gallery = new SimpleLightbox('.gallery a', {
   captionPosition: 'bottom',
   captionDelay: 250,
 });
+
+function scrollImg() {
+  const { height: cardHeight } =
+    refs.imagesContainer.firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 1.85,
+    behavior: 'smooth',
+  });
+}
