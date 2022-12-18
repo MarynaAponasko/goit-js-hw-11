@@ -17,33 +17,50 @@ refs.loadMoreBtn.addEventListener('click', onLoadMore);
 const pixabayApi = new PixabayApi();
 refs.loadMoreBtn.classList.add('visually-hidden');
 
-function onFormSubmit(e) {
+async function onFormSubmit(e) {
   e.preventDefault();
   pixabayApi.query = e.currentTarget.elements.query.value.trim();
   if (pixabayApi.query === '') {
+    refs.loadMoreBtn.classList.add('visually-hidden');
+    onClearGalery();
     return;
   }
   pixabayApi.resetPage();
-  pixabayApi.fetchImages().then(({ hits, totalHits }) => {
-    if (totalHits === 0) {
-      refs.loadMoreBtn.classList.add('visually-hidden');
-      onClearGalery();
-      Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-      return;
-    } else {
-      Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+  // pixabayApi.fetchImages().then(({ hits, totalHits }) => {
+  //   if (totalHits === 0) {
+  //     refs.loadMoreBtn.classList.add('visually-hidden');
+  //     onClearGalery();
+  //     Notiflix.Notify.failure(
+  //       'Sorry, there are no images matching your search query. Please try again.'
+  //     );
+  //     return;
+  //   } else {
+  //     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 
-      pixabayApi.incrementPage();
-      checkHits(totalHits);
+  //     pixabayApi.incrementPage();
+  //     checkHits(totalHits);
 
-      // refs.loadMoreBtn.classList.remove('visually-hidden');
-    }
+  //     // refs.loadMoreBtn.classList.remove('visually-hidden');
+  //   }
+  const data = await pixabayApi.fetchImages();
+  if (data.totalHits === 0) {
+    refs.loadMoreBtn.classList.add('visually-hidden');
     onClearGalery();
-    createGaleryItemsMarkup(hits);
-    gallery.refresh();
-  });
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    return;
+  } else {
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+
+    pixabayApi.incrementPage();
+    checkHits(data.totalHits);
+
+    // refs.loadMoreBtn.classList.remove('visually-hidden');
+  }
+  onClearGalery();
+  createGaleryItemsMarkup(data.hits);
+  gallery.refresh();
 }
 
 function checkHits(totalHits) {
