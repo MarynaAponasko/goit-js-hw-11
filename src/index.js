@@ -42,6 +42,7 @@ function onFormSubmit(e) {
     }
     onClearGalery();
     createGaleryItemsMarkup(hits);
+    gallery.refresh();
   });
 }
 
@@ -86,17 +87,6 @@ function createGaleryItemsMarkup(array) {
     )
     .join('');
   refs.imagesContainer.insertAdjacentHTML('beforeend', boxMarkup);
-
-  const gallery = new SimpleLightbox('.gallery a', {
-    captions: true,
-    captionsData: 'alt',
-    captionPosition: 'bottom',
-    captionDelay: 250,
-  });
-  gallery.on('show.simplelightbox', function (event) {
-    event.preventDefault();
-  });
-  gallery.refresh();
 }
 async function onLoadMore(e) {
   try {
@@ -104,6 +94,7 @@ async function onLoadMore(e) {
     console.log(data);
     pixabayApi.incrementPage();
     createGaleryItemsMarkup(data.hits);
+    gallery.refresh();
     if (data.hits.length < 40) {
       refs.loadMoreBtn.classList.add('visually-hidden');
       Notiflix.Notify.info(
